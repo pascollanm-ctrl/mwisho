@@ -1,447 +1,636 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Hospital Management — Offline Demo</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hospital Management — Offline Demo</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-    <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css">
 
-  <style>
-    /* Minimal inline fallback styles so the HTML looks okay before style.css */
-    :root{
-      --blue:#2563eb; --light:#f8fafc; --muted:#6b7280; --card:#ffffff;
-      --surface:#f1f5f9;
-    }
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
-    .app{display:flex;height:100vh;background:var(--surface);}
-    .sidebar{width:260px;background:linear-gradient(180deg,#0ea5e9, #0369a1);color:white;padding:18px;box-sizing:border-box}
-    .brand{display:flex;gap:12px;align-items:center;margin-bottom:18px}
-    .brand img{width:44px;height:44px;border-radius:8px;background:white;padding:4px}
-    .brand h1{font-size:18px;margin:0}
-    .nav{margin-top:12px}
-    .nav button{display:flex;align-items:center;width:100%;padding:10px;border-radius:8px;border:0;background:transparent;color:inherit;margin-bottom:6px;cursor:pointer;text-align:left}
-    .nav button.active{background:rgba(255,255,255,0.12)}
-    .main{flex:1;display:flex;flex-direction:column}
-    .header{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:white;box-shadow:0 1px 0 rgba(0,0,0,0.04)}
-    .page{padding:20px;overflow:auto;flex:1}
-    .cards{display:flex;gap:12px;flex-wrap:wrap}
-    .card{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.06);min-width:180px}
-    table{width:100%;border-collapse:collapse;background:var(--card);border-radius:8px;overflow:hidden}
-    th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
-    .search{display:flex;gap:8px;align-items:center;margin-bottom:12px}
-    .btn{background:var(--blue);color:white;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
-    .muted{color:var(--muted)}
-    footer{padding:12px;text-align:center;color:var(--muted)}
-    /* responsive */
-    @media(max-width:900px){
-      .sidebar{display:none}
-      .app{flex-direction:column}
-    }
-  </style>
+  <style>
+    /* Minimal inline fallback styles so the HTML looks okay before style.css */
+    :root{
+      --blue:#2563eb; --light:#f8fafc; --muted:#6b7280; --card:#ffffff;
+      --surface:#f1f5f9;
+    }
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+    .app{display:flex;height:100vh;background:var(--surface);}
+    .sidebar{width:260px;background:linear-gradient(180deg,#0ea5e9, #0369a1);color:white;padding:18px;box-sizing:border-box}
+    .brand{display:flex;gap:12px;align-items:center;margin-bottom:18px}
+    .brand img{width:44px;height:44px;border-radius:8px;background:white;padding:4px}
+    .brand h1{font-size:18px;margin:0}
+    .nav{margin-top:12px}
+    .nav button{display:flex;align-items:center;width:100%;padding:10px;border-radius:8px;border:0;background:transparent;color:inherit;margin-bottom:6px;cursor:pointer;text-align:left}
+    .nav button.active{background:rgba(255,255,255,0.12)}
+    .main{flex:1;display:flex;flex-direction:column}
+    .header{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:white;box-shadow:0 1px 0 rgba(0,0,0,0.04)}
+    .page{padding:20px;overflow:auto;flex:1}
+    .cards{display:flex;gap:12px;flex-wrap:wrap}
+    .card{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.06);min-width:180px}
+    table{width:100%;border-collapse:collapse;background:var(--card);border-radius:8px;overflow:hidden}
+    th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+    .search{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+    .btn{background:var(--blue);color:white;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .muted{color:var(--muted)}
+    footer{padding:12px;text-align:center;color:var(--muted)}
+    /* responsive */
+    @media(max-width:900px){
+      .sidebar{display:none}
+      .app{flex-direction:column}
+    }
+  </style>
 </head>
 <body>
-  <div class="app" id="app">
-        <aside class="sidebar" aria-label="Main menu">
-      <div class="brand">
-        <img src="assets/logo.png" alt="Logo" onerror="this.style.display='none'">
-        <div>
-          <h1>MyHospital</h1>
-          <div class="muted" style="font-size:12px">Offline demo</div>
-        </div>
-      </div>
+  <div class="app" id="app">
+    <aside class="sidebar" aria-label="Main menu">
+      <div class="brand">
+        <img src="assets/logo.png" alt="Logo" onerror="this.style.display='none'">
+        <div>
+          <h1>MyHospital</h1>
+          <div class="muted" style="font-size:12px">Offline demo</div>
+        </div>
+      </div>
 
-      <div style="margin-top:10px">
-        <div style="font-size:12px;opacity:0.9;margin-bottom:8px">Logged in as</div>
-        <div style="font-weight:600">Staff</div>
-      </div>
+      <div style="margin-top:10px">
+        <div style="font-size:12px;opacity:0.9;margin-bottom:8px">Logged in as</div>
+        <div style="font-weight:600">Staff</div>
+      </div>
 
-      <nav class="nav" id="nav">
-        <button data-target="dashboard" class="active">Dashboard</button>
-        <button data-target="registration">Patient Registration</button>
-        <button data-target="triage">Triage (Vitals)</button>
-        <button data-target="consultation">Consultation</button>
-        <button data-target="lab">Laboratory</button>
-        <button data-target="pharmacy">Pharmacy</button>
-        <button data-target="billing">Billing</button>
-        <button data-target="reports">Reports</button>
-        <button id="logoutBtn" style="margin-top:12px;background:transparent;border:1px solid rgba(255,255,255,0.18);">Logout</button>
-      </nav>
+      <nav class="nav" id="nav">
+        <button data-target="dashboard" class="active">Dashboard</button>
+        <button data-target="registration">Patient Registration</button>
+        <button data-target="triage">Triage (Vitals)</button>
+        <button data-target="consultation">Consultation</button>
+        <button data-target="lab">Laboratory</button>
+        <button data-target="pharmacy">Pharmacy</button>
+        <button data-target="billing">Billing</button>
+        <button data-target="reports">Reports</button>
+        <button id="logoutBtn" style="margin-top:12px;background:transparent;border:1px solid rgba(255,255,255,0.18);">Logout</button>
+      </nav>
 
-      <div style="position:absolute;bottom:18px;left:18px;right:18px;font-size:12px">
-        <div class="muted">Version</div>
-        <div style="font-weight:600">v0.1 — Local demo</div>
-      </div>
-    </aside>
+      <div style="position:absolute;bottom:18px;left:18px;right:18px;font-size:12px">
+        <div class="muted">Version</div>
+        <div style="font-weight:600">v0.1 — Local demo</div>
+      </div>
+    </aside>
 
-        <main class="main">
-            <header class="header">
-        <div style="display:flex;align-items:center;gap:18px">
-          <button id="menuToggle" style="display:none" class="btn">Menu</button>
-          <h2 id="pageTitle">Dashboard</h2>
-          <div class="muted" id="pageSubtitle" style="font-size:13px">Quick overview</div>
-        </div>
+    <main class="main">
+      <header class="header">
+        <div style="display:flex;align-items:center;gap:18px">
+          <button id="menuToggle" style="display:none" class="btn">Menu</button>
+          <h2 id="pageTitle">Dashboard</h2>
+          <div class="muted" id="pageSubtitle" style="font-size:13px">Quick overview</div>
+        </div>
 
-        <div style="display:flex;align-items:center;gap:12px">
-          <label style="display:flex;align-items:center;gap:8px" title="Toggle dark mode">
-            <input type="checkbox" id="themeToggle" />
-            <span class="muted" style="font-size:13px">Dark</span>
-          </label>
-          <div style="display:flex;align-items:center;gap:12px">
-            <div style="text-align:right">
-              <div style="font-weight:600">You</div>
-              <div class="muted" style="font-size:12px">Staff</div>
-            </div>
-            <img src="assets/icons/user.svg" alt="user" width="40" height="40" onerror="this.style.display='none'">
-          </div>
-        </div>
-      </header>
+        <div style="display:flex;align-items:center;gap:12px">
+          <label style="display:flex;align-items:center;gap:8px" title="Toggle dark mode">
+            <input type="checkbox" id="themeToggle" />
+            <span class="muted" style="font-size:13px">Dark</span>
+          </label>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="text-align:right">
+              <div style="font-weight:600">You</div>
+              <div class="muted" style="font-size:12px">Staff</div>
+            </div>
+            <img src="assets/icons/user.svg" alt="user" width="40" height="40" onerror="this.style.display='none'">
+          </div>
+        </div>
+      </header>
 
-            <section class="page" id="page">
+      <section class="page" id="page">
 
-                <div id="dashboard" class="section">
-          <div class="cards" style="margin-bottom:18px">
-            <div class="card">
-              <div class="muted" style="font-size:12px">Total patients</div>
-              <div id="statPatients" style="font-size:20px;font-weight:700">0</div>
-            </div>
-            <div class="card">
-              <div class="muted" style="font-size:12px">Daily visits</div>
-              <div id="statVisits" style="font-size:20px;font-weight:700">0</div>
-              </div>
-            <div class="card">
-              <div class="muted" style="font-size:12px">Total revenue</div>
-              <div id="statRevenue" style="font-size:20px;font-weight:700">KSH 0</div>
-            </div>
-            <div class="card">
-              <div class="muted" style="font-size:12px">Most common diagnosis</div>
-              <div id="statCommonDx" style="font-size:16px;font-weight:700">—</div>
-            </div>
-          </div>
+        <div id="dashboard" class="section">
+          <div class="cards" style="margin-bottom:18px">
+            <div class="card">
+              <div class="muted" style="font-size:12px">Total patients</div>
+              <div id="statPatients" style="font-size:20px;font-weight:700">0</div>
+            </div>
+            <div class="card">
+              <div class="muted" style="font-size:12px">Daily visits</div>
+              <div id="statVisits" style="font-size:20px;font-weight:700">0</div>
+            </div>
+            <div class="card">
+              <div class="muted" style="font-size:12px">Total revenue</div>
+              <div id="statRevenue" style="font-size:20px;font-weight:700">KSH 0</div>
+            </div>
+            <div class="card">
+              <div class="muted" style="font-size:12px">Most common diagnosis</div>
+              <div id="statCommonDx" style="font-size:16px;font-weight:700">—</div>
+            </div>
+          </div>
 
-          <div style="display:flex;gap:12px;flex-wrap:wrap">
-            <div style="flex:1;min-width:320px" class="card">
-              <h3 style="margin-top:0">Recent Patients</h3>
-              <div class="search">
-                <input id="searchPatientDashboard" placeholder="Search patients..." style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef8">
-                <button class="btn" id="openRegistration">New</button>
-              </div>
-              <div style="max-height:260px;overflow:auto">
-                <table id="dashboardPatientsTable">
-                  <thead><tr><th>ID</th><th>Name</th><th>Age</th><th>Phone</th></tr></thead>
-                  <tbody></tbody>
-                </table>
-              </div>
-            </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div style="flex:1;min-width:320px" class="card">
+              <h3 style="margin-top:0">Recent Patients</h3>
+              <div class="search">
+                <input id="searchPatientDashboard" placeholder="Search patients..." style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef8">
+                <button class="btn" id="openRegistration">New</button>
+              </div>
+              <div style="max-height:260px;overflow:auto">
+                <table id="dashboardPatientsTable">
+                  <thead><tr><th>ID</th><th>Name</th><th>Age</th><th>Phone</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
 
-            <div style="width:420px" class="card">
-              <h3 style="margin-top:0">Visits Chart</h3>
-              <canvas id="visitsChart" height="220"></canvas>
-            </div>
-          </div>
-        </div>
+            <div style="width:420px" class="card">
+              <h3 style="margin-top:0">Visits Chart</h3>
+              <canvas id="visitsChart" height="220"></canvas>
+            </div>
+          </div>
+        </div>
 
-                <div id="registration" class="section" style="display:none">
-          <div class="card" style="margin-bottom:12px">
-            <h3 style="margin-top:0">Register Patient</h3>
-            <form id="patientForm">
-              <div style="display:flex;gap:8px;flex-wrap:wrap">
-                <input required name="name" placeholder="Full name" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef8">
-                <input required name="idNumber" placeholder="ID Number" style="width:180px;padding:8px;border-radius:8px;border:1px solid #e6eef8">
-                <input required name="phone" placeholder="Phone" style="width:160px;padding:8px;border-radius:8px;border:1px solid #e6eef8">
-                <select name="gender" required style="width:140px;padding:8px;border-radius:8px;border:1px solid #e6eef8">
-                  <option value="">Gender</option><option>Female</option><option>Male</option><option>Other</option>
-                </select>
-                <input required name="age" placeholder="Age" style="width:100px;padding:8px;border-radius:8px;border:1px solid #e6eef8">
-                <input name="nextOfKin" placeholder="Next of kin" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef8">
-                <input name="address" placeholder="Address" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8">
-              </div>
-              <div style="margin-top:10px">
-                <button class="btn" type="submit">Save patient</button>
-                <button type="button" id="resetPatient" style="margin-left:8px;padding:8px;border-radius:8px;border:1px solid #e6eef8;background:transparent">Reset</button>
-              </div>
-            </form>
-          </div>
+        <div id="registration" class="section" style="display:none">
+          <div class="card" style="margin-bottom:12px">
+            <h3 style="margin-top:0">Register Patient</h3>
+            <form id="patientForm">
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <input required name="name" placeholder="Full name" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef8">
+                <input required name="idNumber" placeholder="ID Number" style="width:180px;padding:8px;border-radius:8px;border:1px solid #e6eef8">
+                <input required name="phone" placeholder="Phone" style="width:160px;padding:8px;border-radius:8px;border:1px solid #e6eef8">
+                <select name="gender" required style="width:140px;padding:8px;border-radius:8px;border:1px solid #e6eef8">
+                  <option value="">Gender</option><option>Female</option><option>Male</option><option>Other</option>
+                </select>
+                <input required name="age" placeholder="Age" style="width:100px;padding:8px;border-radius:8px;border:1px solid #e6eef8">
+                <input name="nextOfKin" placeholder="Next of kin" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef8">
+                <input name="address" placeholder="Address" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8">
+              </div>
+              <div style="margin-top:10px">
+                <button class="btn" type="submit">Save patient</button>
+                <button type="button" id="resetPatient" style="margin-left:8px;padding:8px;border-radius:8px;border:1px solid #e6eef8;background:transparent">Reset</button>
+              </div>
+            </form>
+          </div>
 
-          <div class="card">
-            <h3 style="margin-top:0">Patients List</h3>
-            <div class="search">
-              <input id="searchPatients" placeholder="Search by name or ID..." style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef8">
-            </div>
-            <div style="max-height:360px;overflow:auto">
-              <table id="patientsTable">
-                <thead><tr><th>ID</th><th>Name</th><th>Age</th><th>Phone</th><th>Actions</th></tr></thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+          <div class="card">
+            <h3 style="margin-top:0">Patients List</h3>
+            <div class="search">
+              <input id="searchPatients" placeholder="Search by name or ID..." style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef8">
+            </div>
+            <div style="max-height:360px;overflow:auto">
+              <table id="patientsTable">
+                <thead><tr><th>ID</th><th>Name</th><th>Age</th><th>Phone</th><th>Actions</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
-                <div id="triage" class="section" style="display:none">
-          <div class="card">
-            <h3 style="margin-top:0">Add Vitals</h3>
-            <div style="display:flex;gap:8px;align-items:center">
-              <select id="triageSelectPatient" style="padding:8px;border-radius:8px;border:1px solid #e6eef8"></select>
-              <input id="bp" placeholder="BP (e.g. 120/80)" style="padding:8px;border-radius:8px;border:1px solid #e6eef8">
-              <input id="temp" placeholder="Temp (°C)" style="width:100px;padding:8px;border-radius:8px;border:1px solid #e6eef8">
-              <input id="pulse" placeholder="Pulse" style="width:100px;padding:8px;border-radius:8px;border:1px solid #e6eef8">
-              <input id="weight" placeholder="Weight (kg)" style="width:110px;padding:8px;border-radius:8px;border:1px solid #e6eef8">
-              <input id="height" placeholder="Height (m)" style="width:110px;padding:8px;border-radius:8px;border:1px solid #e6eef8">
-              <button id="saveVitals" class="btn">Save Vitals</button>
-            </div>
-            <div style="margin-top:10px" class="muted">BMI will be calculated automatically when you save.</div>
-          </div>
+        <div id="triage" class="section" style="display:none">
+          <div class="card">
+            <h3 style="margin-top:0">Add Vitals</h3>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select id="triageSelectPatient" style="padding:8px;border-radius:8px;border:1px solid #e6eef8"></select>
+              <input id="bp" placeholder="BP (e.g. 120/80)" style="padding:8px;border-radius:8px;border:1px solid #e6eef8">
+              <input id="temp" placeholder="Temp (°C)" style="width:100px;padding:8px;border-radius:8px;border:1px solid #e6eef8">
+              <input id="pulse" placeholder="Pulse" style="width:100px;padding:8px;border-radius:8px;border:1px solid #e6eef8">
+              <input id="weight" placeholder="Weight (kg)" style="width:110px;padding:8px;border-radius:8px;border:1px solid #e6eef8">
+              <input id="height" placeholder="Height (m)" style="width:110px;padding:8px;border-radius:8px;border:1px solid #e6eef8">
+              <button id="saveVitals" class="btn">Save Vitals</button>
+            </div>
+            <div style="margin-top:10px" class="muted">BMI will be calculated automatically when you save.</div>
+          </div>
 
-          <div class="card" style="margin-top:12px">
-            <h3 style="margin-top:0">Recent Vitals</h3>
-            <div style="max-height:260px;overflow:auto">
-              <table id="vitalsTable">
-                <thead><tr><th>Patient</th><th>BP</th><th>Temp</th><th>Pulse</th><th>BMI</th></tr></thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+          <div class="card" style="margin-top:12px">
+            <h3 style="margin-top:0">Recent Vitals</h3>
+            <div style="max-height:260px;overflow:auto">
+              <table id="vitalsTable">
+                <thead><tr><th>Patient</th><th>BP</th><th>Temp</th><th>Pulse</th><th>BMI</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
-                <div id="consultation" class="section" style="display:none">
-          <div class="card">
-            <h3 style="margin-top:0">Consultation</h3>
-            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-              <select id="consultPatientSelect" style="padding:8px;border-radius:8px;border:1px solid #e6eef8"></select>
-              <button id="loadTriage" class="btn">Load triage</button>
-            </div>
+        <div id="consultation" class="section" style="display:none">
+          <div class="card">
+            <h3 style="margin-top:0">Consultation</h3>
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+              <select id="consultPatientSelect" style="padding:8px;border-radius:8px;border:1px solid #e6eef8"></select>
+              <button id="loadTriage" class="btn">Load triage</button>
+            </div>
 
-            <div id="triagePreview" style="margin-bottom:12px" class="muted">Triage details will appear here.</div>
+            <div id="triagePreview" style="margin-bottom:12px" class="muted">Triage details will appear here.</div>
 
-            <form id="consultForm">
-              <textarea name="symptoms" placeholder="Symptoms" style="width:100%;height:70px;padding:8px;border-radius:8px;border:1px solid #e6eef8"></textarea>
-              <div style="display:flex;gap:8px;margin-top:8px">
-                <select name="diagnosis" id="diagnosis" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef8">
-                  <option value="">-- Diagnosis (ICD-10) --</option>
-                  <option value="A09">A09 — Diarrhoea and gastroenteritis</option>
-                  <option value="J06.9">J06.9 — Acute upper respiratory infection</option>
-                  <option value="I10">I10 — Essential (primary) hypertension</option>
-                </select>
-                <input name="investigations" placeholder="Investigations (comma separated)" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef8">
-              </div>
+            <form id="consultForm">
+              <textarea name="symptoms" placeholder="Symptoms" style="width:100%;height:70px;padding:8px;border-radius:8px;border:1px solid #e6eef8"></textarea>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <select name="diagnosis" id="diagnosis" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef8">
+                  <option value="">-- Diagnosis (ICD-10) --</option>
+                  <option value="A09">A09 — Diarrhoea and gastroenteritis</option>
+                  <option value="J06.9">J06.9 — Acute upper respiratory infection</option>
+                  <option value="I10">I10 — Essential (primary) hypertension</option>
+                </select>
+                <input name="investigations" placeholder="Investigations (comma separated)" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef8">
+              </div>
 
-              <div style="margin-top:8px">
-                <input name="prescription" placeholder="Prescription (comma separated)" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8">
-              </div>
+              <div style="margin-top:8px">
+                <input name="prescription" placeholder="Prescription (comma separated)" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8">
+              </div>
 
-              <div style="margin-top:10px">
-                <button class="btn" type="submit">Save Consultation</button>
-              </div>
-            </form>
-        </div>
+              <div style="margin-top:10px">
+                <button class="btn" type="submit">Save Consultation</button>
+              </div>
+            </form>
+          </div>
+        </div>
 
-                <div id="lab" class="section" style="display:none">
-          <div class="card">
-            <h3 style="margin-top:0">Lab Requests </h3>
-            <div style="max-height:320px;overflow:auto">
-              <table id="labTable">
-                <thead><tr><th>Patient</th><th>Test</th><th>Status</th><th>Actions</th></tr></thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        <div id="lab" class="section" style="display:none">
+          <div class="card">
+            <h3 style="margin-top:0">Lab Requests</h3>
+            <div style="max-height:320px;overflow:auto">
+              <table id="labTable">
+                <thead><tr><th>Patient</th><th>Test</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
-                <div id="pharmacy" class="section" style="display:none">
-          <div class="card">
-            <h3 style="margin-top:0">Prescriptions</h3>
-            <div style="max-height:320px;overflow:auto">
-              <table id="prescriptionsTable">
-                <thead><tr><th>Patient</th><th>Drugs</th><th>Status</th><th>Actions</th></tr></thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        <div id="pharmacy" class="section" style="display:none">
+          <div class="card">
+            <h3 style="margin-top:0">Prescriptions</h3>
+            <div style="max-height:320px;overflow:auto">
+              <table id="prescriptionsTable">
+                <thead><tr><th>Patient</th><th>Drugs</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
-                <div id="billing" class="section" style="display:none">
-          <div class="card">
-            <h3 style="margin-top:0">Billing</h3>
-            <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
-              <select id="billPatientSelect" style="padding:8px;border-radius:8px;border:1px solid #e6eef8"></select>
-              <button id="generateBill" class="btn">Generate Invoice</button>
-            </div>
+        <div id="billing" class="section" style="display:none">
+          <div class="card">
+            <h3 style="margin-top:0">Billing</h3>
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+              <select id="billPatientSelect" style="padding:8px;border-radius:8px;border:1px solid #e6eef8"></select>
+              <button id="generateBill" class="btn">Generate Invoice</button>
+            </div>
 
-            <div id="invoicePreview" class="card muted" style="display:none"></div>
-          </div>
+            <div id="invoicePreview" class="card muted" style="display:none"></div>
+          </div>
 
-          <div class="card" style="margin-top:12px">
-            <h3 style="margin-top:0">Invoices</h3>
-            <div style="max-height:320px;overflow:auto">
-              <table id="invoicesTable">
-                <thead><tr><th>Invoice#</th><th>Patient</th><th>Total</th><th>Paid</th><th>Status</th></tr></thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+          <div class="card" style="margin-top:12px">
+            <h3 style="margin-top:0">Invoices</h3>
+            <div style="max-height:320px;overflow:auto">
+              <table id="invoicesTable">
+                <thead><tr><th>Invoice#</th><th>Patient</th><th>Total</th><th>Paid</th><th>Status</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
-                <div id="reports" class="section" style="display:none">
-          <div class="card">
-            <h3 style="margin-top:0">Reports & Analytics</h3>
-            <div style="display:flex;gap:12px;flex-wrap:wrap">
-              <div style="width:320px">
-                <h4 style="margin:4px 0">Diagnosis distribution</h4>
-                <canvas id="dxChart" height="220"></canvas>
-              </div>
-              <div style="width:420px">
-                <h4 style="margin:4px 0">Revenue (monthly)</h4>
-                <canvas id="revenueChart" height="220"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div id="reports" class="section" style="display:none">
+          <div class="card">
+            <h3 style="margin-top:0">Reports & Analytics</h3>
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              <div style="width:320px">
+                <h4 style="margin:4px 0">Diagnosis distribution</h4>
+                <canvas id="dxChart" height="220"></canvas>
+              </div>
+              <div style="width:420px">
+                <h4 style="margin:4px 0">Revenue (monthly)</h4>
+                <canvas id="revenueChart" height="220"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <footer style="margin-top:18px">Local demo — data stored in <code>localStorage</code></footer>
-      </section>
-    </main>
-  </div>
+        <footer style="margin-top:18px">Powered by Google Sheets & Apps Script</footer>
+      </section>
+    </main>
+  </div>
 
-    <div id="loginModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;">
-    <div style="width:360px;background:white;padding:18px;border-radius:10px;box-shadow:0 6px 30px rgba(2,6,23,0.2)">
-      <h3 style="margin-top:0">Login</h3>
-      <form id="loginForm">
-        <input name="username" placeholder="Username" required style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8;margin-bottom:8px">
-        <input name="password" placeholder="Password" required type="password" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8;margin-bottom:8px">
-        <div style="display:flex;gap:8px;justify-content:flex-end">
-          <button type="submit" class="btn">Login</button>
-          <button type="button" id="demoLogin" class="btn" style="background:#06b6d4">Demo</button>
-        </div>
-        <div style="margin-top:10px;font-size:13px" class="muted">
-          Users: <strong>admin / admin123</strong> or <strong>staff / staff123</strong>
-        </div>
-      </form>
-    </div>
-  </div>
+  <div id="loginModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;">
+    <div style="width:360px;background:white;padding:18px;border-radius:10px;box-shadow:0 6px 30px rgba(2,6,23,0.2)">
+      <h3 style="margin-top:0">Login</h3>
+      <form id="loginForm">
+        <input name="username" placeholder="Username" required style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8;margin-bottom:8px">
+        <input name="password" placeholder="Password" required type="password" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8;margin-bottom:8px">
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button type="submit" class="btn">Login</button>
+          <button type="button" id="demoLogin" class="btn" style="background:#06b6d4">Demo</button>
+        </div>
+        <div style="margin-top:10px;font-size:13px" class="muted">
+          Users: <strong>admin / admin123</strong> or <strong>staff / staff123</strong>
+        </div>
+      </form>
+    </div>
+  </div>
 
-    <script>
-    const SHEET_API = "https://script.google.com/macros/s/AKfycbyX19dc5D4G05PLKr9El-tEN8SUtNaa8XmVM_CcPS6gVr4MCjm2ZIEmaMopboe51WI2/exec";
+  <script>
+    /* * IMPORTANT: This script block contains all the client-side JavaScript 
+     * necessary for navigation, login, and communication with the Code.gs 
+     * Apps Script file using google.script.run.
+     */
 
-    // Save a new patient
-    async function savePatientToSheet(patientData) {
-      try {
-        const response = await fetch(SHEET_API, {
-          method: "POST",
-          body: JSON.stringify(patientData),
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-        const result = await response.json();
-        console.log("Patient saved:", result);
-        alert("Patient saved successfully!");
-      } catch (err) {
-        console.error("Error saving patient:", err);
-        alert("Failed to save patient.");
-      }
-    }
+    // ------------------------------------------------
+    // Core GAS Utilities
+    // ------------------------------------------------
 
-    // Example usage when form submits:
-    document.addEventListener("DOMContentLoaded", () => {
-      const patientForm = document.getElementById("patientForm");
-      if (patientForm) {
-        patientForm.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const data = Object.fromEntries(new FormData(e.target).entries());
-          await savePatientToSheet(data);
-          e.target.reset(); // Optional: Clear the form after submission
-        });
-      } else {
-        console.error("Element with ID 'patientForm' not found.");
-      }
-    });
-  </script>
+    /**
+     * Universal failure handler for google.script.run calls.
+     */
+    function onServerFailure(error) {
+      console.error("Server-side error:", error);
+      alert('Server Error: ' + error.message);
+    }
 
-      <script>
-    // Small inline navigation glue so user can interact before main.js is added.
-    (function(){
-      const nav = document.getElementById('nav');
-      const sections = document.querySelectorAll('.section');
-      const pageTitle = document.getElementById('pageTitle');
-      nav.addEventListener('click', (e) => {
-        const btn = e.target.closest('button[data-target]');
-        if(!btn) return;
-        nav.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        const target = btn.dataset.target;
-        sections.forEach(s => s.style.display = s.id === target ? '' : 'none');
-        pageTitle.textContent = btn.textContent.trim();
-        // Update page subtitle based on the new page
-        const pageSubtitle = document.getElementById('pageSubtitle');
-        const titles = {
-          'dashboard': 'Quick overview',
-          'registration': 'Enroll a new patient',
-          'triage': 'Record patient vital signs',
-          'consultation': 'Doctor\'s consultation notes',
-          'lab': 'Manage laboratory requests',
-          'pharmacy': 'Manage prescriptions',
-          'billing': 'Invoice generation and payments',
-          'reports': 'System analytics',
-        };
-        pageSubtitle.textContent = titles[target] || '';
-      });
+    /**
+     * Generic function to fetch and populate patient dropdowns across the app.
+     */
+    function populatePatientSelects(patients) {
+      const selectIds = ['triageSelectPatient', 'consultPatientSelect', 'billPatientSelect'];
 
-      // demo login behaviour (so the UI is accessible right away)
-      const loginModal = document.getElementById('loginModal');
-      const loginForm = document.getElementById('loginForm');
-      const demoBtn = document.getElementById('demoLogin');
-      const logoutBtn = document.getElementById('logoutBtn');
-      const openRegistration = document.getElementById('openRegistration');
+      selectIds.forEach(id => {
+        const select = document.getElementById(id);
+        if (!select) return;
 
-      function finishLogin(username){
-        loginModal.style.display='none';
-        localStorage.setItem('hms_session', JSON.stringify({user:username,role: username==='admin' ? 'Admin' : 'Staff'}));
-        // update UI role label
-        document.querySelector('.sidebar div:nth-child(2) div').textContent = username;
-      }
+        // Clear existing options
+        select.innerHTML = '<option value="">-- Select Patient --</option>';
 
-      loginForm.addEventListener('submit', (ev)=>{
-        ev.preventDefault();
-        const fd = new FormData(loginForm);
-        const u = fd.get('username').trim();
-        const p = fd.get('password').trim();
-        // hardcoded credentials
-        if((u==='admin' && p==='admin123') || (u==='staff' && p==='staff123')){
-          finishLogin(u);
-        } else {
-          alert('Invalid credentials for demo. Use admin/admin123 or staff/staff123');
-        }
-      });
+        patients.forEach(patient => {
+          const option = document.createElement('option');
+          option.value = patient.id; // Use PatientID from the sheet
+          option.textContent = `${patient.name} (${patient.id})`;
+          select.appendChild(option);
+        });
+      });
+    }
 
-      demoBtn.addEventListener('click', ()=> finishLogin('staff'));
-      logoutBtn.addEventListener('click', ()=>{
-        localStorage.removeItem('hms_session');
-        loginModal.style.display='';
-        // reset UI to dashboard
-        document.querySelector('#nav button[data-target="dashboard"]').click();
-      });
+    /**
+     * Renders the Patients List table in the Registration/Dashboard sections.
+     */
+    function updatePatientsList(patients) {
+      const tables = {
+        dashboardPatientsTable: ['id', 'name', 'age', 'phone'],
+        patientsTable: ['id', 'name', 'age', 'phone']
+      };
 
-      // quick open registration
-      openRegistration.addEventListener('click', ()=> {
-        document.querySelector('#nav button[data-target="registration"]').click();
-      });
+      for (const [tableId, fields] of Object.entries(tables)) {
+        const tableElement = document.getElementById(tableId);
+        if (!tableElement) continue;
 
-      // check session on load
-      window.addEventListener('load', ()=>{
-        const s = localStorage.getItem('hms_session');
-        if(s){ loginModal.style.display='none'; const u = JSON.parse(s).user; document.querySelector('.sidebar div:nth-child(2) div').textContent = u; }
-        else { loginModal.style.display=''; }
-      });
+        const tbody = tableElement.querySelector('tbody');
+        if (!tbody) continue;
 
-      // theme toggle (very simple)
-      const themeToggle = document.getElementById('themeToggle');
-      themeToggle.addEventListener('change', (e)=>{
-        if(e.target.checked) document.documentElement.style.filter = 'invert(0.98) hue-rotate(180deg)';
-        else document.documentElement.style.filter = '';
-      });
-    })();
-  </script>
+        tbody.innerHTML = '';
+        patients.forEach(patient => {
+          const row = tbody.insertRow();
+          fields.forEach(field => {
+            row.insertCell().textContent = patient[field];
+          });
+          // Add 'Actions' button for the main list
+          if (tableId === 'patientsTable') {
+            row.insertCell().innerHTML = '<button class="btn" style="background:#ef4444; padding: 4px 8px; font-size: 12px;">Edit</button>';
+          }
+        });
+      }
+    }
+
+
+    // ------------------------------------------------
+    // Navigation & Login Logic (Modified for GAS Load)
+    // ------------------------------------------------
+
+    (function(){
+      const nav = document.getElementById('nav');
+      const sections = document.querySelectorAll('.section');
+      const pageTitle = document.getElementById('pageTitle');
+      const loginModal = document.getElementById('loginModal');
+      const loginForm = document.getElementById('loginForm');
+      const demoBtn = document.getElementById('demoLogin');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const openRegistration = document.getElementById('openRegistration');
+      const patientForm = document.getElementById('patientForm');
+      const saveVitalsBtn = document.getElementById('saveVitals');
+      const consultForm = document.getElementById('consultForm');
+      const generateBillBtn = document.getElementById('generateBill');
+      
+      // Simple UI Navigation
+      nav.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-target]');
+        if(!btn) return;
+        nav.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const target = btn.dataset.target;
+        sections.forEach(s => s.style.display = s.id === target ? '' : 'none');
+        pageTitle.textContent = btn.textContent.trim();
+        // Reset subtitle for new page
+        document.getElementById('pageSubtitle').textContent = {
+            'dashboard': 'Quick overview',
+            'registration': 'Register new patients',
+            'triage': 'Record patient vitals',
+            'consultation': 'Doctor\'s notes and diagnosis',
+            'lab': 'Manage lab requests',
+            'pharmacy': 'Dispense prescriptions',
+            'billing': 'Generate invoices',
+            'reports': 'System analytics'
+        }[target] || '';
+      });
+
+      // Login/Logout Logic (Uses localStorage for simulation only)
+      function finishLogin(username){
+        loginModal.style.display='none';
+        localStorage.setItem('hms_session', JSON.stringify({user:username,role: username==='admin' ? 'Admin' : 'Staff'}));
+        document.querySelector('.sidebar div:nth-child(2) div').textContent = username;
+        // Reload data after successful login
+        loadInitialData(); 
+      }
+
+      loginForm.addEventListener('submit', (ev)=>{
+        ev.preventDefault();
+        const fd = new FormData(loginForm);
+        const u = fd.get('username').trim();
+        const p = fd.get('password').trim();
+        // hardcoded credentials
+        if((u==='admin' && p==='admin123') || (u==='staff' && p==='staff123')){
+          finishLogin(u);
+        } else {
+          alert('Invalid credentials for demo. Use admin/admin123 or staff/staff123');
+        }
+      });
+
+      demoBtn.addEventListener('click', ()=> finishLogin('staff'));
+      
+      logoutBtn.addEventListener('click', ()=>{
+        localStorage.removeItem('hms_session');
+        loginModal.style.display='';
+        document.querySelector('#nav button[data-target="dashboard"]').click();
+        document.querySelector('.sidebar div:nth-child(2) div').textContent = 'Staff';
+      });
+
+      // Quick open registration from dashboard
+      openRegistration.addEventListener('click', ()=> {
+        document.querySelector('#nav button[data-target="registration"]').click();
+      });
+      
+      // Theme toggle
+      const themeToggle = document.getElementById('themeToggle');
+      themeToggle.addEventListener('change', (e)=>{
+        if(e.target.checked) document.documentElement.style.filter = 'invert(0.98) hue-rotate(180deg)';
+        else document.documentElement.style.filter = '';
+      });
+      
+      // Data Loader Function
+      function loadInitialData() {
+          // Fetch initial patient data from the sheet when the page loads
+          google.script.run
+              .withFailureHandler(onServerFailure)
+              .withSuccessHandler((patients) => {
+                  updatePatientsList(patients);
+                  populatePatientSelects(patients);
+                  // Update dashboard stats (simplified counts)
+                  document.getElementById('statPatients').textContent = patients.length;
+                  document.getElementById('statVisits').textContent = patients.length; 
+              })
+              .getPatients();
+      }
+
+      // Check session on load
+      window.addEventListener('load', ()=>{
+        const s = localStorage.getItem('hms_session');
+        if(s){ 
+          loginModal.style.display='none'; 
+          const u = JSON.parse(s).user; 
+          document.querySelector('.sidebar div:nth-child(2) div').textContent = u; 
+          loadInitialData(); // Load data if logged in
+        } else { 
+          loginModal.style.display=''; 
+        }
+      });
+      
+      // ------------------------------------------------
+      // Form Submission Logic (using google.script.run)
+      // ------------------------------------------------
+
+      // 1. Patient Registration Form Handler
+      patientForm.addEventListener('submit', (ev) => {
+          ev.preventDefault();
+          const formData = Object.fromEntries(new FormData(patientForm).entries());
+
+          google.script.run
+              .withFailureHandler(onServerFailure)
+              .withSuccessHandler((message) => {
+                  alert(message);
+                  patientForm.reset();
+                  // Refresh lists and dropdowns after successful save
+                  google.script.run.withSuccessHandler((patients) => {
+                      updatePatientsList(patients);
+                      populatePatientSelects(patients);
+                  }).getPatients();
+              })
+              .savePatient(formData);
+      });
+      
+      // 2. Triage/Vitals Save Handler
+      saveVitalsBtn.addEventListener('click', () => {
+          const patientId = document.getElementById('triageSelectPatient').value;
+          const bp = document.getElementById('bp').value;
+          const temp = document.getElementById('temp').value;
+          const pulse = document.getElementById('pulse').value;
+          const weight = document.getElementById('weight').value;
+          const height = document.getElementById('height').value;
+
+          if (!patientId || !bp || !temp || !pulse || !weight || !height) {
+              alert('Please fill all vitals fields and select a patient.');
+              return;
+          }
+
+          google.script.run
+              .withFailureHandler(onServerFailure)
+              .withSuccessHandler((message) => {
+                  alert(message);
+                  // Clear inputs after save
+                  document.getElementById('bp').value = '';
+                  document.getElementById('temp').value = '';
+                  document.getElementById('pulse').value = '';
+                  document.getElementById('weight').value = '';
+                  document.getElementById('height').value = '';
+              })
+              .saveVitals(patientId, bp, temp, pulse, weight, height);
+      });
+      
+      // 3. Consultation Load Triage Button Handler
+      document.getElementById('loadTriage').addEventListener('click', () => {
+          const patientId = document.getElementById('consultPatientSelect').value;
+          if (!patientId) {
+              alert('Please select a patient first.');
+              return;
+          }
+
+          google.script.run
+              .withFailureHandler(onServerFailure)
+              .withSuccessHandler((vitals) => {
+                  const preview = document.getElementById('triagePreview');
+                  if (vitals) {
+                      preview.innerHTML = `
+                          **Latest Triage:** BP: ${vitals.bp}, Temp: ${vitals.temp}°C, Pulse: ${vitals.pulse}, BMI: ${vitals.bmi}
+                      `;
+                  } else {
+                      preview.textContent = 'No vitals found for this patient.';
+                  }
+              })
+              .getLatestVitals(patientId);
+      });
+      
+      // 4. Consultation Form Handler
+      consultForm.addEventListener('submit', (ev) => {
+          ev.preventDefault();
+          const patientId = document.getElementById('consultPatientSelect').value;
+          if (!patientId) {
+              alert('Please select a patient.');
+              return;
+          }
+
+          const formData = Object.fromEntries(new FormData(consultForm).entries());
+          
+          google.script.run
+              .withFailureHandler(onServerFailure)
+              .withSuccessHandler((message) => {
+                  alert(message);
+                  consultForm.reset();
+                  document.getElementById('triagePreview').textContent = 'Triage details will appear here.';
+              })
+              .saveConsultation(patientId, formData);
+      });
+      
+      // 5. Billing Generation Handler
+      generateBillBtn.addEventListener('click', () => {
+          const patientId = document.getElementById('billPatientSelect').value;
+          if (!patientId) {
+              alert('Please select a patient to generate a bill.');
+              return;
+          }
+
+          google.script.run
+              .withFailureHandler(onServerFailure)
+              .withSuccessHandler((result) => {
+                  alert(result.message);
+                  const preview = document.getElementById('invoicePreview');
+                  preview.style.display = 'block';
+                  
+                  if (result.invoice) {
+                      preview.innerHTML = `
+                          <h4>Invoice Preview (${result.invoice.number})</h4>
+                          <p>Consultation: KSH ${result.invoice.consult}</p>
+                          <p>Lab: KSH ${result.invoice.lab}</p>
+                          <p>Pharmacy: KSH ${result.invoice.pharmacy}</p>
+                          <hr style="margin: 8px 0;">
+                          <p style="font-weight: bold;">TOTAL: KSH ${result.invoice.total}</p>
+                      `;
+                  } else {
+                       preview.textContent = result.message;
+                  }
+              })
+              .generateBill(patientId);
+      });
+
+    })();
+  </script>
 </body>
 </html>
